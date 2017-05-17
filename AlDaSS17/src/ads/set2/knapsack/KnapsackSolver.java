@@ -53,8 +53,8 @@ public class KnapsackSolver {
 				weight[0][t] = items[0].getWeight();
 		}
 
-		for (int profit = 0; profit < weight[0].length; profit++) {
-			for (int i = 1; i < weight.length; i++) {
+		for (int i = 1; i < weight.length; i++) {
+			for (int profit = 0; profit < weight[0].length; profit++) {
 
 				Item item = items[i];
 				int w = item.getWeight();
@@ -70,11 +70,7 @@ public class KnapsackSolver {
 				
 			}
 			
-			if (weight[n - 1][profit] > capacity) {
-				System.out.println(profit-1);
-				
-			}
-			
+
 		}
 
 		Packing pack = new Packing();
