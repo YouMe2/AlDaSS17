@@ -3,8 +3,6 @@
  */
 package ads.set2.knapsack;
 
-import java.util.Collection;
-
 /**
  * @author Yannik Eikmeier
  * @since 17.05.2017
@@ -68,13 +66,11 @@ public class EfficientKnapsackSolver {
 
 			}
 
-			
-
 		}
 
 		int profit;
 		for (profit = maxProfit; profit > 0; profit--) {
-			if (weight[(n - 1) % 2][profit] <= capacity){
+			if (weight[(n - 1) % 2][profit] <= capacity) {
 				break;
 			}
 		}

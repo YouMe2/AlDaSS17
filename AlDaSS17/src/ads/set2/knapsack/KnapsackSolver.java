@@ -1,6 +1,5 @@
 package ads.set2.knapsack;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
