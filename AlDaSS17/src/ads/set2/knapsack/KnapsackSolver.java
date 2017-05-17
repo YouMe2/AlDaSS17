@@ -53,8 +53,8 @@ public class KnapsackSolver {
 				weight[0][t] = items[0].getWeight();
 		}
 
-		for (int i = 1; i < weight.length; i++) {
-			for (int profit = 0; profit < weight[0].length; profit++) {
+		for (int i = 1; i < n; i++) {
+			for (int profit = 0; profit <= maxProfit; profit++) {
 
 				Item item = items[i];
 				int w = item.getWeight();
