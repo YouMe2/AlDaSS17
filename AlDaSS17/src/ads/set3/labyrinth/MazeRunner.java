@@ -1,11 +1,29 @@
 package ads.set3.labyrinth;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import javax.security.auth.login.FailedLoginException;
+
 public class MazeRunner {
+
+	public static void main(String[] args) {
+
+		boolean[][] labyrinth = new boolean[][] { 
+			{true, true, true, true, true, true, true},
+			{false, false, false, false, false, false, true}, 
+			{true, false, true, false, true, false, true},
+			{true, false, true, false, false, false, true}, 
+			{true, false, true, false, true, false, true},
+			{true, false, false, false, true, false, false},
+			{true, true, true, true, true, true, true} };
+			printMaze(labyrinth);
+		System.out.println(findPath(labyrinth, 0, 1, 6, 5));
+
+	}
 
 	/**
 	 * Finds a path through the given labyrinth from the start position to the
@@ -28,102 +46,79 @@ public class MazeRunner {
 	 */
 	public static List<Direction> findPath(boolean[][] labyrinth, int startX, int startY, int endX, int endY) {
 		Direction[] dirs = Direction.values();
-		final int gCost = 1;
-		
+
 		final int rowLength = labyrinth.length;
 		final int colLenght = labyrinth[0].length;
-		
+
 		final int startRow = startY;
-		final int startCol = startX;		
+		final int startCol = startX;
 		final int targetRow = endY;
 		final int targetCol = endX;
 		/*
-		 * oh btw...
-		 * Why on earth do u guys keep messing this [x][y] vs [row][col] thing up??
-		 * Why give us a X-coord for start and end, but have the maze structured in to rows and columns?
-		 * Now we would need to do [y][x] and certainly does not feel right!
+		 * oh btw... Why on earth do u guys keep messing this [x][y] vs
+		 * [row][col] thing up?? Why give us a X-coord for start and end, but
+		 * have the maze structured in to rows and columns? Now we would need to
+		 * do [y][x] and certainly does not feel right!
 		 * 
-		 * This f*ed me up like crazy trying to debugg this!
+		 * This f*ed me up like crazy, trying to debugg this!
 		 */
-		
-		
-		
-		//buildCells
-		Cell[][] cells = new Cell[rowLength][colLenght];
-		for (int row = 0; row < rowLength; row++) {
-			for (int col = 0; col < colLenght; col++) {
-				if(labyrinth[row][col])
-					cells[row][col] = null;
-				else {
-					cells[row][col] = new Cell(col, row, targetRow, targetCol);
-				}
-			}
-		}
-		
-		HashSet<Cell> closedCells = new HashSet<>();
-		PriorityQueue<Cell> openCells = new PriorityQueue<>();
-		
-		Cell currCell;
-		try{
-			currCell = cells[startRow][startCol];			
-		} catch (Exception e) {
-			currCell = null;
-		}
-		if(currCell == null) return null;
-		currCell.setG(0);
 
-		while (currCell.getRow() != targetRow && currCell.getCol() != targetCol) {
-			closedCells.add(currCell);
-			
-			alltheways: for (int i = 0; i < dirs.length; i++) {
-				
-				int newRow = translateRow(currCell.getRow(), dirs[i]);
-				int newCol = translateCol(currCell.getCol(), dirs[i]);
-				Cell surrCell = null;
-				if( newRow >= 0 && newRow < rowLength && newCol >= 0 && newCol < colLenght)
-					surrCell = cells[newCol][newRow];
-				
-				if (surrCell == null)
-					continue alltheways;
-				
-				if (!closedCells.contains(surrCell)) {
-					
-					if (openCells.contains(surrCell)){
-						if (currCell.getG() + gCost < surrCell.getG()) {
-							surrCell.setG(currCell.getG() + gCost);
-							surrCell.setDir(dirs[i]);
-							openCells.remove(surrCell);
-							openCells.add(surrCell);
-						}
-					}
-					else {
-						surrCell.setG(currCell.getG() + gCost);
-						surrCell.setDir(dirs[i]);
-						openCells.add(surrCell);
-					}
-				}
-			}
-			
-			
-			if (openCells.isEmpty()) // break if no way exists
-				return null;
-			currCell = openCells.poll();
+		boolean[][] whereivbeen = new boolean[rowLength][colLenght];
 
-		}
-
-		//now currCell is the target
-
+		// init
 		LinkedList<Direction> path = new LinkedList<Direction>();
-		
-		//backtrack the path through the cells
-		while (currCell.getRow() != startRow && currCell.getCol() != startCol) {
-			path.addFirst(currCell.getDir());
-			int prevRow = translateRow(currCell.getRow(), invert(currCell.getDir()));
-			int prevCol = translateCol(currCell.getCol(), invert(currCell.getDir()));	
-			currCell = cells[prevRow][prevCol];
+		LinkedList<WayPoint> way = new LinkedList<>();
+		WayPoint startPoint = new WayPoint(startRow, startCol, null);
+		way.add(startPoint);
+		whereivbeen[startRow][startCol] = true;
+
+		WayPoint currPoint = startPoint;
+
+		while (true) {
+			WayPoint nextPoint = null;
+			printMaze(whereivbeen);
+			alltheways: for (Direction dir : dirs) {
+
+				int nextRow = translateRow(currPoint.getRow(), dir);
+				int nextCol = translateCol(currPoint.getCol(), dir);
+
+				if ((nextRow >= 0 && nextRow < rowLength && nextCol >= 0 && nextCol < colLenght)
+						&& !whereivbeen[nextRow][nextCol] && !labyrinth[nextRow][nextCol]) {
+					// new valid wayPoint
+
+					currPoint.setDir(dir); // update pointer
+					nextPoint = new WayPoint(nextRow, nextCol, dir);
+					way.addLast(nextPoint);
+					whereivbeen[nextRow][nextCol] = true;
+
+					break alltheways;
+				} else {
+					// novalid wapoint -> try next one
+				}
+			}
+
+			if (nextPoint != null) {
+				// nextPoint ist valid
+				path.addLast(nextPoint.getDir());
+				currPoint = nextPoint;
+				
+				if (currPoint.getRow() == targetRow && currPoint.getCol() == targetCol) {
+					return path;
+				}
+				
+			}
+			else {
+				// currPoint ist sackgasse!
+				if (currPoint == startPoint) // aussichtslose lage :(
+					return null;
+				path.removeLast();
+				way.removeLast();
+				currPoint = way.getLast();
+				// weiter beim letzen...
+
+			}
+
 		}
-			
-		return path;
 	}
 
 	public static int translateRow(int row, Direction dir) {
@@ -141,6 +136,7 @@ public class MazeRunner {
 			return col + 1;
 		return col;
 	}
+
 	public static Direction invert(Direction dir) {
 		switch (dir) {
 		case NORTH:
@@ -154,61 +150,62 @@ public class MazeRunner {
 		}
 		return null;
 	}
-}
 
-class Cell implements Comparable<Cell> {
+	private static class WayPoint {
 
-	private final int row, col;
+		private final int row, col;
 
-	/**
-	 * the movement cost from start to this cell
-	 */
-	private int G = 0;
+		private Direction dir;
 
-	/**
-	 * heuristischer abstand zum ziel
-	 */
-	private final int H;
+		/**
+		 * 
+		 */
+		public WayPoint(int row, int col, Direction dir) {
+			this.row = row;
+			this.col = col;
+			this.dir = dir;
+		}
 
-	private Direction dir = null;
+		/**
+		 * @return the row
+		 */
+		public int getRow() {
+			return row;
+		}
 
-	public Cell(int row, int col, int targetRow, int targetCol) {
-		this.row = row;
-		this.col = col;
-		this.H = Math.abs(row - targetRow) + Math.abs(col - targetCol);
+		/**
+		 * @return the col
+		 */
+		public int getCol() {
+			return col;
+		}
+
+		/**
+		 * @return the dir
+		 */
+		public Direction getDir() {
+			return dir;
+		}
+
+		/**
+		 * @param dir
+		 *            the dir to set
+		 */
+		public void setDir(Direction dir) {
+			this.dir = dir;
+		}
+
 	}
 
-	@Override
-	public int compareTo(Cell o) {
-		return this.getF() - o.getF();
-	}
+	public static void printMaze(boolean[][] labyrinth) {
 
-	public int getRow() {
-		return row;
-	}
+		for (int row = 0; row < labyrinth.length; row++) {
+			for (int col = 0; col < labyrinth[0].length; col++) {
+				System.out.print(labyrinth[row][col] ? "+" : " ");
+			}
+			System.out.println();
+		}
 
-	public int getCol() {
-		return col;
-	}
-
-	public int getF() {
-		return G + H;
-	}
-
-	public int getG() {
-		return G;
-	}
-	
-	public void setG(int g) {
-		G = g;
-	}
-
-	public void setDir(Direction dir) {
-		this.dir = dir;
-	}
-
-	public Direction getDir() {
-		return dir;
 	}
 
 }
