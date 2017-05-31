@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class MazeRunner {
+public class MazeRunner2 {
 
 	/**
 	 * Finds a path through the given labyrinth from the start position to the
@@ -30,63 +30,39 @@ public class MazeRunner {
 		Direction[] dirs = Direction.values();
 		final int gCost = 1;
 		
-		final int rowLength = labyrinth.length;
-		final int colLenght = labyrinth[0].length;
-		
-		final int startRow = startY;
-		final int startCol = startX;		
-		final int targetRow = endY;
-		final int targetCol = endX;
-		/*
-		 * oh btw...
-		 * Why on earth do u guys keep messing this [x][y] vs [row][col] thing up??
-		 * Why give us a X-coord for start and end, but have the maze structured in to rows and columns?
-		 * Now we would need to do [y][x] and certainly does not feel right!
-		 * 
-		 * This f*ed me up like crazy trying to debugg this!
-		 */
-		
-		
-		
+		Cell[][] cells = new Cell[labyrinth.length][labyrinth[0].length];
 		//buildCells
-		Cell[][] cells = new Cell[rowLength][colLenght];
-		for (int row = 0; row < rowLength; row++) {
-			for (int col = 0; col < colLenght; col++) {
-				if(labyrinth[row][col])
-					cells[row][col] = null;
+		for (int y = 0; y < cells.length; y++) {
+			for (int x = 0; x < cells[y].length; x++) {
+				if(labyrinth[y][x])
+					cells[y][x] = null;
 				else {
-					cells[row][col] = new Cell(col, row, targetRow, targetCol);
+					cells[y][x] = new Cell(x, y, endX, endY);
 				}
 			}
 		}
 		
 		HashSet<Cell> closedCells = new HashSet<>();
 		PriorityQueue<Cell> openCells = new PriorityQueue<>();
-		
 		Cell currCell;
 		try{
-			currCell = cells[startRow][startCol];			
+			currCell = cells[startY][startX];			
 		} catch (Exception e) {
 			currCell = null;
 		}
 		if(currCell == null) return null;
 		currCell.setG(0);
 
-		while (currCell.getRow() != targetRow && currCell.getCol() != targetCol) {
+		while (currCell.getRow() != endX && currCell.getCol() != endY) {
 			closedCells.add(currCell);
 			
-			alltheways: for (int i = 0; i < dirs.length; i++) {
+			for (int i = 0; i < dirs.length; i++) {
 				
-				int newRow = translateRow(currCell.getRow(), dirs[i]);
-				int newCol = translateCol(currCell.getCol(), dirs[i]);
-				Cell surrCell = null;
-				if( newRow >= 0 && newRow < rowLength && newCol >= 0 && newCol < colLenght)
-					surrCell = cells[newCol][newRow];
+				int newX = translateX(currCell.getRow(), dirs[i]);
+				int newY = translateY(currCell.getCol(), dirs[i]);	
+				Cell surrCell = cells[newY][newX];
 				
-				if (surrCell == null)
-					continue alltheways;
-				
-				if (!closedCells.contains(surrCell)) {
+				if (surrCell != null && !closedCells.contains(surrCell)) {
 					
 					if (openCells.contains(surrCell)){
 						if (currCell.getG() + gCost < surrCell.getG()) {
@@ -105,9 +81,9 @@ public class MazeRunner {
 			}
 			
 			
-			if (openCells.isEmpty()) // break if no way exists
-				return null;
 			currCell = openCells.poll();
+			if (currCell == null) // break if no way exists
+				return null;
 
 		}
 
@@ -116,30 +92,30 @@ public class MazeRunner {
 		LinkedList<Direction> path = new LinkedList<Direction>();
 		
 		//backtrack the path through the cells
-		while (currCell.getRow() != startRow && currCell.getCol() != startCol) {
+		while (currCell.getRow() != startX && currCell.getCol() != startY) {
 			path.addFirst(currCell.getDir());
-			int prevRow = translateRow(currCell.getRow(), invert(currCell.getDir()));
-			int prevCol = translateCol(currCell.getCol(), invert(currCell.getDir()));	
-			currCell = cells[prevRow][prevCol];
+			int prevX = translateX(currCell.getRow(), invert(currCell.getDir()));
+			int prevY = translateY(currCell.getCol(), invert(currCell.getDir()));	
+			currCell = cells[prevY][prevX];
 		}
 			
 		return path;
 	}
 
-	public static int translateRow(int row, Direction dir) {
-		if (dir == Direction.NORTH)
-			return row - 1;
-		if (dir == Direction.SOUTH)
-			return row + 1;
-		return row;
+	public static int translateX(int x, Direction dir) {
+		if (dir == Direction.WEST)
+			return x - 1;
+		if (dir == Direction.EAST)
+			return x + 1;
+		return x;
 	}
 
-	public static int translateCol(int col, Direction dir) {
-		if (dir == Direction.WEST)
-			return col - 1;
-		if (dir == Direction.EAST)
-			return col + 1;
-		return col;
+	public static int translateY(int y, Direction dir) {
+		if (dir == Direction.NORTH)
+			return y - 1;
+		if (dir == Direction.SOUTH)
+			return y + 1;
+		return y;
 	}
 	public static Direction invert(Direction dir) {
 		switch (dir) {
@@ -156,9 +132,9 @@ public class MazeRunner {
 	}
 }
 
-class Cell implements Comparable<Cell> {
+class Cell2 implements Comparable<Cell> {
 
-	private final int row, col;
+	private final int x, y;
 
 	/**
 	 * the movement cost from start to this cell
@@ -172,10 +148,10 @@ class Cell implements Comparable<Cell> {
 
 	private Direction dir = null;
 
-	public Cell(int row, int col, int targetRow, int targetCol) {
-		this.row = row;
-		this.col = col;
-		this.H = Math.abs(row - targetRow) + Math.abs(col - targetCol);
+	public Cell2(int x, int y, int targetX, int targetY) {
+		this.x = x;
+		this.y = y;
+		this.H = Math.abs(x - targetX) + Math.abs(y - targetY);
 	}
 
 	@Override
@@ -183,12 +159,12 @@ class Cell implements Comparable<Cell> {
 		return this.getF() - o.getF();
 	}
 
-	public int getRow() {
-		return row;
+	public int getX() {
+		return x;
 	}
 
-	public int getCol() {
-		return col;
+	public int getY() {
+		return y;
 	}
 
 	public int getF() {
