@@ -20,11 +20,61 @@ public class MedianCalculator {
 		System.out.println("wanted: " + nums[(nums.length - 1) / 2]);
 	}
 	
-	/*
-	 * 
-	 * 
-	 * 
-	 * 
+	/* 
+	 * Runtimes for array size 6
+	 * 	Groupsize 3: 11020ns
+	 * 	Groupsize 5: 8733ns
+	 * 	Groupsize 7: 2857ns
+	 * 	Groupsize 9: 2395ns
+	 * Runtimes for array size 7
+	 * 	Groupsize 3: 16220ns
+	 * 	Groupsize 5: 7467ns
+	 * 	Groupsize 7: 2291ns
+	 * 	Groupsize 9: 2203ns
+	 * Runtimes for array size 100
+	 * 	Groupsize 3: 189281ns
+	 * 	Groupsize 5: 96583ns
+	 * 	Groupsize 7: 3424049ns
+	 * 	Groupsize 9: 80104ns
+	 * Runtimes for array size 500
+	 * 	Groupsize 3: 420263ns
+	 * 	Groupsize 5: 230497ns
+	 * 	Groupsize 7: 192244ns
+	 * 	Groupsize 9: 158745ns
+	 * Runtimes for array size 1000
+	 * 	Groupsize 3: 3708744ns
+	 * 	Groupsize 5: 132691ns
+	 * 	Groupsize 7: 105987ns
+	 * 	Groupsize 9: 106988ns
+	 * Runtimes for array size 5000
+	 * 	Groupsize 3: 3553794ns
+	 * 	Groupsize 5: 570730ns
+	 * 	Groupsize 7: 460418ns
+	 * 	Groupsize 9: 4534965ns
+	 * Runtimes for array size 10000
+	 * 	Groupsize 3: 1996477ns
+	 * 	Groupsize 5: 1118505ns
+	 * 	Groupsize 7: 5126291ns
+	 * 	Groupsize 9: 927394ns
+	 * Runtimes for array size 50000
+	 * 	Groupsize 3: 16554002ns
+	 * 	Groupsize 5: 17895873ns
+	 * 	Groupsize 7: 11107804ns
+	 * 	Groupsize 9: 8111520ns
+	 * Runtimes for array size 100000
+	 * 	Groupsize 3: 33485230ns
+	 * 	Groupsize 5: 24485627ns
+	 * 	Groupsize 7: 12854428ns
+	 * 	Groupsize 9: 21193475ns
+	 * Runtimes for array size 500000
+	 * 	Groupsize 3: 184601276ns
+	 * 	Groupsize 5: 69186569ns
+	 * 	Groupsize 7: 33828801ns
+	 * 	Groupsize 9: 33892405ns
+	 *   
+	 *  
+	 *  
+	 *  
 	 * 
 	*/
 	
