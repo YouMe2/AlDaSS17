@@ -79,6 +79,9 @@ public class MedianCalculator {
 	 * Schwankungen, was widerum in anbetracht des Testserves kein Wunder ist...
 	 * :'D
 	 * 
+	 * siehe Graphen hier:
+	 * https://docs.google.com/spreadsheets/d/112z8InzUy5CVa9-T732FjzHQtSvkVgLRrJ10vQmvVKY/edit?usp=sharing
+	 * 
 	*/
 	
 	/**
