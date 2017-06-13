@@ -11,13 +11,22 @@ import java.util.Arrays;
  *
  */
 public class MedianCalculator {
-	
+
+	//private test
 	public static void main(String[] args) {
-		System.out.println(median(new int[]{9,5,1,7,8,2,4,3,6,14,84,123,789,124,456}, 3));
-										//	1 2 3 4 5 6 7 8 9 14 84 123 124 456 789
-										//	- - - - - - - x - -  -  -   -   -   -
+		int[] nums = new int[] { 8, 4, 9, 7, 6, 5, 3, 1, 2 };
+		System.out.println("got:    " + median(nums, 3));
+		Arrays.sort(nums);
+		System.out.println("wanted: " + nums[(nums.length - 1) / 2]);
 	}
 	
+	/*
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	*/
 	
 	/**
 	 * Finds the median in the given array of numbers. The algorithm should use
@@ -33,110 +42,116 @@ public class MedianCalculator {
 	 */
 	public static int median(int[] numbers, int groupSize) {
 		if (groupSize != 3 && groupSize != 5 && groupSize != 7 && groupSize != 9)
-			throw new IllegalArgumentException("Unallowed groupsize of: "+groupSize);
-		return elementAt(numbers, (numbers.length-1)/2 ,groupSize);
+			throw new IllegalArgumentException("Unallowed groupsize of: " + groupSize);
+		return elementAt(numbers, (numbers.length - 1) / 2, groupSize);
 	}
 
 	/**
+	 * Finds and returns the number that would be at a given index in a sorted
+	 * version of the numbers.
+	 * 
 	 * @param numbers
-	 * @param index
+	 *            the unsorted array of number. Must not contain duplicates.
+	 * @param index the index
 	 * @param groupSize
-	 * @return the number that would be at the given index in a sorted version of the numbers
+	 *            the size of the groups the array should be split into. Will
+	 *            always be an odd number between 3 and 9.
+	 * @return the number that would be at the given index in a sorted version
+	 *         of the numbers
 	 */
 	private static int elementAt(int[] numbers, int index, int groupSize) {
+		if (groupSize != 3 && groupSize != 5 && groupSize != 7 && groupSize != 9)
+			throw new IllegalArgumentException("Unallowed groupsize of: " + groupSize);
 		if (numbers.length <= groupSize) {
-			return naiveMedian(numbers);
+			// abbruch der rekursion bei begrentzer grˆﬂe -> kein einfluﬂ auf
+			// laufzeit im sinne der O-notation.
+			return naiveElementAt(numbers, index);
 		}
-		
-		
-		int sublists = numbers.length/groupSize; //number of full sublists 
+
+		int sublists = numbers.length / groupSize; // number of full sublists
 		int[] subNumbers;
-		int[] medians = new int[sublists + ((numbers.length%groupSize != 0) ? 1 : 0)];
-		
-		for (int i = 0; i < sublists; i++) {		
-				subNumbers = Arrays.copyOfRange(numbers, i*groupSize, (i+1)*groupSize);
-				Arrays.sort(subNumbers);
-				medians[i] = subNumbers[groupSize/2];	//median aller sublists			
-		}
-		
-		if ( medians.length > sublists) {
-			// last one!
-			subNumbers = Arrays.copyOfRange(numbers, sublists*groupSize, numbers.length);
+		int[] medians = new int[sublists + ((numbers.length % groupSize != 0) ? 1 : 0)];
+
+		for (int i = 0; i < sublists; i++) {
+			subNumbers = Arrays.copyOfRange(numbers, i * groupSize, (i + 1) * groupSize);
 			Arrays.sort(subNumbers);
-			medians[sublists] = subNumbers[(numbers.length%groupSize)/2];	//median aller sublists				
+			medians[i] = subNumbers[groupSize / 2]; // median aller sublists
 		}
-		
+
+		if (medians.length > sublists) {
+			// last one!
+			subNumbers = Arrays.copyOfRange(numbers, sublists * groupSize, numbers.length);
+			Arrays.sort(subNumbers);
+			medians[sublists] = subNumbers[(numbers.length % groupSize - 1) / 2]; // median
+																					// aller
+																					// sublists
+		}
+
 		int medOMed = median(medians, groupSize);
-		
+
 		int[][] L = partition(numbers, medOMed);
-		
+		assert L[0].length + L[1].length + 1 == numbers.length;
+
 		int k = L[0].length;
-		
-		if (index == k){
+
+		if (index == k) {
 			return medOMed;
-		}
-		else {
+		} else {
 			if (index < k) {
 				return elementAt(L[0], index, groupSize);
-			}
-			else {
+			} else {
 				assert index > k;
-				return elementAt(L[1], index - L[0].length+1, groupSize);
+				return elementAt(L[1], index - (k + 1), groupSize);
 			}
 		}
 	}
-	
-	
 
 	/**
+	 * performs a partition of the given numbers into all the ones bigger and
+	 * the ones smaller than x.
+	 * 
 	 * @param numbers
-	 * @param medOMed
-	 * @return
+	 * @param x
+	 * @return two int[]s: [0] with <x and [1] with >x values
 	 */
-	private static int[][] partition(int[] numbers, int med) {
-		
+	private static int[][] partition(int[] numbers, int x) {
+
 		int[][] L = new int[2][];
 
 		int i = 0;
-		int j = numbers.length-1;
-		while ( i != j ){			
-			while (i != j && numbers[i] < med){
+		int j = numbers.length - 1;
+		while (i != j) {
+			while (i != j && numbers[i] < x) {
 				i++;
 			}
-			while (i != j && numbers[j] > med){
+			while (i != j && numbers[j] > x) {
 				j--;
 			}
-			if (i < j){
+			if (i < j) {
 				int temp = numbers[i];
 				numbers[i] = numbers[j];
 				numbers[j] = temp;
-			}		
+			}
 		}
-		assert numbers[i] == med;
+		assert numbers[i] == x;
 		L[0] = Arrays.copyOfRange(numbers, 0, i);
-		L[1] = Arrays.copyOfRange(numbers, i+1, numbers.length);	
+		L[1] = Arrays.copyOfRange(numbers, i + 1, numbers.length);
 		return L;
 	}
 
 	/**
+	 * Performs a naive {@code Arrays.sort()} and returns the value at the given
+	 * index.
+	 * 
 	 * @param numbers
-	 * @return
+	 * @param index
+	 * @return the value at index in a sorted version of numbers
 	 */
-	private static int naiveMedian(int[] numbers) {
-		if (numbers.length > 2) {
-			int[] num = Arrays.copyOf(numbers, numbers.length);
-			Arrays.sort(num);
-			return num[num.length/2];			
-		}
-		else if (numbers.length == 2){
-			return Math.min(numbers[0], numbers[1]);
-		}
-		else if (numbers.length == 1){
-			return numbers[0];
-		}
-		else if (numbers.length == 0){
-			throw new IllegalArgumentException("no median in empty array!");
-		}
-		return 0;
+	private static int naiveElementAt(int[] numbers, int index) {
+		int[] num = Arrays.copyOf(numbers, numbers.length);
+		Arrays.sort(num);
+		return num[index];
+
 	}
+
 }
