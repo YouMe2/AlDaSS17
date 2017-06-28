@@ -42,10 +42,11 @@ public class ConnectedComponentsFinder {
 		Stack<Integer> stack = new Stack<>();
 
 		// return field:
+		int group = 0;
 		int[] sCC = new int[vLength];
 
 		// aufiauf:
-		workOnVertex(v, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC);
+		workOnVertex(v, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC, group);
 
 		return sCC;
 	}
@@ -62,7 +63,7 @@ public class ConnectedComponentsFinder {
 	 * @param sCC
 	 */
 	private static void workOnVertex(int v, int[][] graph, boolean[][] visited, int[] dfsNum, int[] vadder,
-			int[] tiefpunkt, int label, Stack<Integer> stack, int[] sCC) {
+			int[] tiefpunkt, int label, Stack<Integer> stack, int[] sCC, int group) {
 
 		dfsNum[v] = ++label;
 		tiefpunkt[v] = label;
@@ -75,7 +76,7 @@ public class ConnectedComponentsFinder {
 
 				if (dfsNum[u] == 0) {
 					vadder[u] = v;
-					workOnVertex(u, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC);// -> rekursiv mit u
+					workOnVertex(u, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC, group);// -> rekursiv mit u
 				} else if (dfsNum[u] > dfsNum[v] || !stack.contains(u)) {
 					continue search; // -> redo search mit v =v
 
@@ -87,9 +88,10 @@ public class ConnectedComponentsFinder {
 				// keine Kante mehr über
 
 				if (tiefpunkt[v] == dfsNum[v]) {
+					group++;
 					while (true) {
 						int x = stack.pop();
-						sCC[x] = dfsNum[v];
+						sCC[x] = group;
 						if (x == v)
 							break;
 					}
@@ -100,7 +102,7 @@ public class ConnectedComponentsFinder {
 					v = vadder[v];
 					continue search; // -> redo search mit vadder[v]
 				} else if ((u = getUnusedVertex(dfsNum)) != -1) {
-					workOnVertex(u, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC);// -> rekursiv mit u
+					workOnVertex(u, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC, group);// -> rekursiv mit u
 				}
 			}
 			//we dont realy want a while loop here do we? naaaaahh ;)
