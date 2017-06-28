@@ -14,19 +14,15 @@ import java.util.Stack;
 public class ConnectedComponentsFinder {
 
 	public static void main(String[] args) {
-		
-		int[][] graph = new int[][]{
-			{0, 0, 0, 0},
-			{0, 0, 0, 0},
-			{0, 0, 0, 0},
-			{0, 0, 0, 0}};
-			
+
+		int[][] graph = new int[][] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+
 		int[] res = strongConnectedComponents(graph, 0);
 		for (int i = 0; i < res.length; i++) {
-			System.out.print(res[i]+ " ");
+			System.out.print(res[i] + " ");
 		}
 	}
-	
+
 	/**
 	 * Finds the strongly connected components of the given {@code graph} using
 	 * Kosaraju's algorithm.
@@ -66,6 +62,9 @@ public class ConnectedComponentsFinder {
 	}
 
 	/**
+	 * This method does all the work for the algorithm of Kosaraju to find the
+	 * strong Connected Components and writes them into the sCC-Array.
+	 * 
 	 * @param v
 	 * @param graph
 	 * @param visited
@@ -74,7 +73,7 @@ public class ConnectedComponentsFinder {
 	 * @param tiefpunkt
 	 * @param label
 	 * @param stack
-	 * @param sCC
+	 * @param sCC will contain the strong Connected Components in the end
 	 */
 	private static void workOnVertex(int v, int[][] graph, boolean[][] visited, int[] dfsNum, int[] vadder,
 			int[] tiefpunkt, int label, Stack<Integer> stack, int[] sCC, int group) {
@@ -90,7 +89,10 @@ public class ConnectedComponentsFinder {
 
 				if (dfsNum[u] == 0) {
 					vadder[u] = v;
-					workOnVertex(u, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC, group);// -> rekursiv mit u
+					workOnVertex(u, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC, group);// ->
+																											// rekursiv
+																											// mit
+																											// u
 				} else if (dfsNum[u] > dfsNum[v] || !stack.contains(u)) {
 					continue search; // -> redo search mit v =v
 
@@ -116,18 +118,24 @@ public class ConnectedComponentsFinder {
 					v = vadder[v];
 					continue search; // -> redo search mit vadder[v]
 				} else if ((u = getUnusedVertex(dfsNum)) != -1) {
-					workOnVertex(u, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC, group);// -> rekursiv mit u
+					workOnVertex(u, graph, visited, dfsNum, vadder, tiefpunkt, label, stack, sCC, group);// ->
+																											// rekursiv
+																											// mit
+																											// u
 				}
 			}
-			//we dont realy want a while loop here do we? naaaaahh ;)
+			// we dont realy want a while loop here do we? naaaaahh ;)
 			break;
 		}
 
 	}
 
 	/**
+	 * Returns a vertex u from the graph that was not used yet.
+	 * {@code (dfsNum(u) == 0)}
+	 * 
 	 * @param dfsNum
-	 * @return
+	 * @return the vertex u
 	 */
 	private static int getUnusedVertex(int[] dfsNum) {
 		for (int i = 0; i < dfsNum.length; i++) {
@@ -139,10 +147,16 @@ public class ConnectedComponentsFinder {
 	}
 
 	/**
+	 * Returns a vertex u that is adjacent to v in the graph using a edge that
+	 * was not used so far.
+	 * 
 	 * @param v
+	 *            the vertex to start from
 	 * @param graph
+	 *            the graphs adjacency matrix
 	 * @param visited
-	 * @return
+	 *            the same matrix indicating whether an edge was already visited
+	 * @return the vertex u
 	 */
 	private static int getNonVisitedEdge(int v, int[][] graph, boolean[][] visited) {
 		for (int i = 0; i < visited[v].length; i++) {
