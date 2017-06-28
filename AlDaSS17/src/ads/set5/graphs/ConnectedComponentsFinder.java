@@ -13,6 +13,20 @@ import java.util.Stack;
  */
 public class ConnectedComponentsFinder {
 
+	public static void main(String[] args) {
+		
+		int[][] graph = new int[][]{
+			{0, 0, 0, 0},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0}};
+			
+		int[] res = strongConnectedComponents(graph, 0);
+		for (int i = 0; i < res.length; i++) {
+			System.out.print(res[i]+ " ");
+		}
+	}
+	
 	/**
 	 * Finds the strongly connected components of the given {@code graph} using
 	 * Kosaraju's algorithm.
@@ -132,7 +146,7 @@ public class ConnectedComponentsFinder {
 	 */
 	private static int getNonVisitedEdge(int v, int[][] graph, boolean[][] visited) {
 		for (int i = 0; i < visited[v].length; i++) {
-			if (!visited[v][i])
+			if (!visited[v][i] && graph[v][i] == 1)
 				return i;
 		}
 		return -1;
